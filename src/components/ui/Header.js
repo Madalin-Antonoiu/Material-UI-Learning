@@ -1,8 +1,7 @@
-import React from 'react';
-import { AppBar, Toolbar, Tabs, Tab } from '@material-ui/core';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Tabs, Tab, Button } from '@material-ui/core';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import { makeStyles } from "@material-ui/core/styles"
-
 
 import logo from "../../assets/logo.svg";
 
@@ -33,11 +32,23 @@ const useStyles = makeStyles(theme => ({
         ...theme.typography.tab,
         minWidth: 10,
         marginLeft: "25px"
+    },
+    button: {
+        ...theme.typography.estimate,
+        borderRadius: "50px",
+        marginLeft: "50px",
+        marginRight: "25px",
+        height: "45px",
     }
 }))
 
 export default function Header(props) {
     const classes = useStyles();
+
+    const [value, setValue] = useState(0);
+    const handleChange = (e, value) => {
+        setValue(value);
+    }
 
     return <>
         <ElevationScroll>
@@ -45,7 +56,7 @@ export default function Header(props) {
                 <Toolbar disableGutters>
                     <img className={classes.logo} alt="company logo" src={logo} />
 
-                    <Tabs className={classes.tabContainer}>
+                    <Tabs value={value} onChange={handleChange} indicatorColor="primary" className={classes.tabContainer}>
                         <Tab className={classes.tab} label="Home" />
                         <Tab className={classes.tab} label="Services" />
                         <Tab className={classes.tab} label="The Revolution" />
@@ -53,6 +64,9 @@ export default function Header(props) {
                         <Tab className={classes.tab} label="Contact Us" />
                     </Tabs>
 
+                    <Button variant="contained" color="secondary" className={classes.button}>
+                        Free Estimate
+                    </Button>
                 </Toolbar>
             </AppBar>
         </ElevationScroll>
