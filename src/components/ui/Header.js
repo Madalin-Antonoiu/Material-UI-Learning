@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, Tabs, Tab, Button, Menu, MenuItem } from '@material-ui/core';
+import {
+    AppBar, Toolbar, Tabs, Tab, Button, Menu,
+    MenuItem, SwipeableDrawer, IconButton
+} from '@material-ui/core';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import { makeStyles } from "@material-ui/core/styles"
 import { Link } from "react-router-dom";
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { useTheme } from "@material-ui/core/styles";
+import MenuIcon from "@material-ui/icons/Menu"
 
 import logo from "../../assets/logo.svg";
 
@@ -74,6 +78,20 @@ const useStyles = makeStyles(theme => ({
         "&:hover": {
             opacity: 1
         }
+    },
+    drawerIcon: {
+        height: "40px",
+        width: "40px",
+        [theme.breakpoints.down("xs")]: {
+            height: "30px",
+            width: "30px",
+        },
+    },
+    drawerIconContainer: {
+        marginLeft: "auto",
+        "&:hover": {
+            backgroundColor: "transparent"
+        }
     }
 }))
 
@@ -81,26 +99,28 @@ export default function Header(props) {
     const classes = useStyles();
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.down("md"));
+    const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     const [value, setValue] = useState(0);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [open, setOpen] = useState(false);
+    const [openMenu, setOpenMenu] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [openDrawer, setOpenDrawer] = useState(false);
 
-    const handleChange = (e, value) => {
-        setValue(value);
+    const handleChange = (e, newValue) => {
+        setValue(newValue);
     }
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
-        setOpen(true);
+        setOpenMenu(true);
     }
     const handleClose = (e) => {
         setAnchorEl(null);
-        setOpen(false);
+        setOpenMenu(false);
     }
     const handleMenuItemClick = (e, i) => {
         setAnchorEl(null);
-        setOpen(false);
+        setOpenMenu(false);
         setSelectedIndex(i)
     }
     const menuOptions = [
@@ -161,7 +181,7 @@ export default function Header(props) {
                 Free Estimate
                     </Button>
 
-            <Menu id="simple-menu" classes={{ paper: classes.menu }} anchorEl={anchorEl} open={open} onClose={handleClose} MenuListProps={{ onMouseLeave: handleClose }} elevation={0}>
+            <Menu id="simple-menu" classes={{ paper: classes.menu }} anchorEl={anchorEl} open={openMenu} onClose={handleClose} MenuListProps={{ onMouseLeave: handleClose }} elevation={0}>
                 {menuOptions.map((option, i) => (
                     <MenuItem
                         key={option}
@@ -178,6 +198,28 @@ export default function Header(props) {
         </>
     )
 
+    const drawer = (
+        <>
+            <SwipeableDrawer
+                disableBackdropTransition={!iOS}
+                disableDiscovery={iOS}
+                open={openDrawer}
+                onOpen={() => setOpenDrawer(true)}
+                onClose={() => setOpenDrawer(false)}
+            >
+                Example Drawer
+            </SwipeableDrawer>
+
+            <IconButton className={classes.drawerIconContainer}>
+                <MenuIcon
+                    onClick={() => setOpenDrawer(!openDrawer)}
+                    disableRipple
+                    className={classes.drawerIcon}
+                />
+            </IconButton>
+        </>
+    )
+
     return <>
         <ElevationScroll>
             <AppBar>
@@ -186,7 +228,7 @@ export default function Header(props) {
                         <img className={classes.logo} alt="company logo" src={logo} />
                     </Button>
 
-                    {matches ? null : tabs}
+                    {matches ? drawer : tabs}
 
                 </Toolbar>
             </AppBar>
