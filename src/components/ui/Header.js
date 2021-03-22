@@ -147,7 +147,12 @@ export default function Header(props) {
     ]
     const routes = [
         { name: "Home", link: "/", activeIndex: 0 },
-        { name: "Services", link: "/services", activeIndex: 1 },
+        {
+            name: "Services", link: "/services", activeIndex: 1,
+            ariaOwns: anchorEl ? "simple-menu" : undefined,
+            ariaPopup: anchorEl ? "true" : undefined,
+            mouseOver: event => handleClick(event)
+        },
         { name: "The Revolution", link: "/revolution", activeIndex: 2 },
         { name: "About Us", link: "/about", activeIndex: 3 },
         { name: "Contact Us", link: "/contact", activeIndex: 4 }
@@ -173,87 +178,81 @@ export default function Header(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [value])
 
-    const tabs = (
-        <>
-            <Tabs value={value} onChange={handleChange} indicatorColor="primary" className={classes.tabContainer}>
-                <Tab className={classes.tab} component={Link} to="/" label="Home" />
-                <Tab
-                    className={classes.tab}
+    const tabs = (<>
+        <Tabs value={value} onChange={handleChange} indicatorColor="primary" className={classes.tabContainer}>
+            {routes.map((route, index) => (
+                <Tab className={classes.tab}
                     component={Link}
-                    to="/services"
-                    label="Services"
-                    aria-owns={anchorEl ? "simple-menu" : undefined}
-                    aria-haspopup={anchorEl ? "true" : undefined}
-                    onMouseOver={event => handleClick(event)}
+                    to={route.link}
+                    label={route.name}
+                    aria-owns={route.ariaOwns}
+                    aria-haspopup={route.ariaPopup}
+                    onMouseOver={route.mouseOver}
                 />
-                <Tab className={classes.tab} component={Link} to="/revolution" label="The Revolution" />
-                <Tab className={classes.tab} component={Link} to="/about" label="About Us" />
-                <Tab className={classes.tab} component={Link} to="/contact" label="Contact Us" />
-            </Tabs>
+            ))}
+        </Tabs>
 
-            <Button variant="contained" color="secondary" className={classes.button}>
-                Free Estimate
+        <Button variant="contained" color="secondary" className={classes.button}>
+            Free Estimate
                     </Button>
 
-            <Menu id="simple-menu" classes={{ paper: classes.menu }} anchorEl={anchorEl} open={openMenu} onClose={handleClose} MenuListProps={{ onMouseLeave: handleClose }} elevation={0}>
-                {menuOptions.map((option, i) => (
-                    <MenuItem
-                        key={option}
-                        component={Link}
-                        to={option.link}
-                        classes={{ root: classes.menuItem }}
-                        onClick={ev => { handleMenuItemClick(ev, i); setValue(1); handleClose() }}
-                        selected={i === selectedIndex && value === 1}
-                    >
-                        {option.name}
-                    </MenuItem>
-                ))}
-            </Menu>
-        </>
+        <Menu id="simple-menu" classes={{ paper: classes.menu }} anchorEl={anchorEl} open={openMenu} onClose={handleClose} MenuListProps={{ onMouseLeave: handleClose }} elevation={0}>
+            {menuOptions.map((option, i) => (
+                <MenuItem
+                    key={option}
+                    component={Link}
+                    to={option.link}
+                    classes={{ root: classes.menuItem }}
+                    onClick={ev => { handleMenuItemClick(ev, i); setValue(1); handleClose() }}
+                    selected={i === selectedIndex && value === 1}
+                >
+                    {option.name}
+                </MenuItem>
+            ))}
+        </Menu>
+    </>
     )
+    const drawer = (<>
+        <SwipeableDrawer
+            disableBackdropTransition={!iOS}
+            disableDiscovery={iOS}
+            open={openDrawer}
+            onOpen={() => setOpenDrawer(true)}
+            onClose={() => setOpenDrawer(false)}
+            classes={{ paper: classes.drawer }}
+        >
 
-    const drawer = (
-        <>
-            <SwipeableDrawer
-                disableBackdropTransition={!iOS}
-                disableDiscovery={iOS}
-                open={openDrawer}
-                onOpen={() => setOpenDrawer(true)}
-                onClose={() => setOpenDrawer(false)}
-                classes={{ paper: classes.drawer }}
-            >
+            <List disablePadding>
+                <ListItem selected={value === 0} onClick={() => { setOpenDrawer(false); setValue(0) }} divider button component={Link} to="/">
+                    <ListItemText className={value === 0 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Home</ListItemText>
+                </ListItem>
+                <ListItem selected={value === 1} onClick={() => { setOpenDrawer(false); setValue(1) }} divider button component={Link} to="/services">
+                    <ListItemText className={value === 1 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Services</ListItemText>
+                </ListItem>
+                <ListItem selected={value === 2} onClick={() => { setOpenDrawer(false); setValue(2) }} divider button component={Link} to="/revolution">
+                    <ListItemText className={value === 2 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>The Revolution</ListItemText>
+                </ListItem>
+                <ListItem selected={value === 3} onClick={() => { setOpenDrawer(false); setValue(3) }} divider button component={Link} to="/about">
+                    <ListItemText className={value === 3 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>About Us</ListItemText>
+                </ListItem>
+                <ListItem selected={value === 4} onClick={() => { setOpenDrawer(false); setValue(4) }} divider button component={Link} to="/contact">
+                    <ListItemText className={value === 4 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Contact Us</ListItemText>
+                </ListItem>
+                <ListItem selected={value === 5} className={classes.drawerItemEstimate} onClick={() => { setOpenDrawer(false); setValue(5) }} divider button component={Link} to="/estimate">
+                    <ListItemText className={value === 5 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Free Estimate</ListItemText>
+                </ListItem>
+            </List>
 
-                <List disablePadding>
-                    <ListItem selected={value === 0} onClick={() => { setOpenDrawer(false); setValue(0) }} divider button component={Link} to="/">
-                        <ListItemText className={value === 0 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Home</ListItemText>
-                    </ListItem>
-                    <ListItem selected={value === 1} onClick={() => { setOpenDrawer(false); setValue(1) }} divider button component={Link} to="/services">
-                        <ListItemText className={value === 1 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Services</ListItemText>
-                    </ListItem>
-                    <ListItem selected={value === 2} onClick={() => { setOpenDrawer(false); setValue(2) }} divider button component={Link} to="/revolution">
-                        <ListItemText className={value === 2 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>The Revolution</ListItemText>
-                    </ListItem>
-                    <ListItem selected={value === 3} onClick={() => { setOpenDrawer(false); setValue(3) }} divider button component={Link} to="/about">
-                        <ListItemText className={value === 3 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>About Us</ListItemText>
-                    </ListItem>
-                    <ListItem selected={value === 4} onClick={() => { setOpenDrawer(false); setValue(4) }} divider button component={Link} to="/contact">
-                        <ListItemText className={value === 4 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Contact Us</ListItemText>
-                    </ListItem>
-                    <ListItem selected={value === 5} className={classes.drawerItemEstimate} onClick={() => { setOpenDrawer(false); setValue(5) }} divider button component={Link} to="/estimate">
-                        <ListItemText className={value === 5 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Free Estimate</ListItemText>
-                    </ListItem>
-                </List>
+        </SwipeableDrawer>
 
-            </SwipeableDrawer>
-
-            <IconButton className={classes.drawerIconContainer}>
-                <MenuIcon
-                    onClick={() => setOpenDrawer(!openDrawer)}
-                    disableRipple
-                    className={classes.drawerIcon}
-                />
-            </IconButton>
-        </>
+        <IconButton className={classes.drawerIconContainer}>
+            <MenuIcon
+                onClick={() => setOpenDrawer(!openDrawer)}
+                disableRipple
+                className={classes.drawerIcon}
+            />
+        </IconButton>
+    </>
     )
 
     return <>
