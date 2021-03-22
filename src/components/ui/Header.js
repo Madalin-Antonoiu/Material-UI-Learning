@@ -181,7 +181,7 @@ export default function Header(props) {
     const tabs = (<>
         <Tabs value={value} onChange={handleChange} indicatorColor="primary" className={classes.tabContainer}>
             {routes.map((route, index) => (
-                <Tab className={classes.tab}
+                <Tab key={`${route}${index}`} className={classes.tab}
                     component={Link}
                     to={route.link}
                     label={route.name}
@@ -196,7 +196,15 @@ export default function Header(props) {
             Free Estimate
                     </Button>
 
-        <Menu id="simple-menu" classes={{ paper: classes.menu }} anchorEl={anchorEl} open={openMenu} onClose={handleClose} MenuListProps={{ onMouseLeave: handleClose }} elevation={0}>
+        <Menu
+            id="simple-menu"
+            classes={{ paper: classes.menu }}
+            anchorEl={anchorEl} open={openMenu}
+            onClose={handleClose}
+            MenuListProps={{ onMouseLeave: handleClose }}
+            elevation={0}
+            keepMounted
+        >
             {menuOptions.map((option, i) => (
                 <MenuItem
                     key={option}
@@ -223,21 +231,25 @@ export default function Header(props) {
         >
 
             <List disablePadding>
-                <ListItem selected={value === 0} onClick={() => { setOpenDrawer(false); setValue(0) }} divider button component={Link} to="/">
-                    <ListItemText className={value === 0 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Home</ListItemText>
-                </ListItem>
-                <ListItem selected={value === 1} onClick={() => { setOpenDrawer(false); setValue(1) }} divider button component={Link} to="/services">
-                    <ListItemText className={value === 1 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Services</ListItemText>
-                </ListItem>
-                <ListItem selected={value === 2} onClick={() => { setOpenDrawer(false); setValue(2) }} divider button component={Link} to="/revolution">
-                    <ListItemText className={value === 2 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>The Revolution</ListItemText>
-                </ListItem>
-                <ListItem selected={value === 3} onClick={() => { setOpenDrawer(false); setValue(3) }} divider button component={Link} to="/about">
-                    <ListItemText className={value === 3 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>About Us</ListItemText>
-                </ListItem>
-                <ListItem selected={value === 4} onClick={() => { setOpenDrawer(false); setValue(4) }} divider button component={Link} to="/contact">
-                    <ListItemText className={value === 4 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Contact Us</ListItemText>
-                </ListItem>
+                {routes.map(route => (
+                    <ListItem
+                        key={`${route}${route.activeIndex}`}
+                        divider
+                        button
+                        component={Link}
+                        to={route.link}
+                        selected={value === route.activeIndex}
+                        onClick={() => {
+                            setOpenDrawer(false);
+                            setValue(route.activeIndex)
+                        }}
+                    >
+                        <ListItemText className={value === route.activeIndex ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>
+                            {route.name}
+                        </ListItemText>
+                    </ListItem>
+                ))}
+
                 <ListItem selected={value === 5} className={classes.drawerItemEstimate} onClick={() => { setOpenDrawer(false); setValue(5) }} divider button component={Link} to="/estimate">
                     <ListItemText className={value === 5 ? [classes.drawerItem, classes.drawerItemSelected] : classes.drawerItem} disableTypography>Free Estimate</ListItemText>
                 </ListItem>
