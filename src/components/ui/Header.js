@@ -158,7 +158,7 @@ export default function Header(props) {
         [...menuOptions, ...routes].forEach(route => {
             switch (window.location.pathname) {
                 case `${route.link}`:
-                    if (value !== route.activeIndes) {
+                    if (value !== route.activeIndex) {
                         setValue(route.activeIndex)
                     }
                     if (route.selectedIndex && route.selectedIndex !== selectedIndex) {
@@ -169,7 +169,9 @@ export default function Header(props) {
                     break;
             }
         })
-    }, [value, menuOptions, selectedIndex, routes])
+    },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [value])
 
     const tabs = (
         <>
